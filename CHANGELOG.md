@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.5a2](https://github.com/OpenVoiceOS/palavreado/tree/1.7.5a2) (2026-09-13)
+
+[Full Changelog](https://github.com/OpenVoiceOS/palavreado/compare/1.7.5a1...1.7.5a2)
+
+**Merged pull requests:**
+
+- ci: run the hierarchical ovoscope e2e in the e2e job [\#52](https://github.com/OpenVoiceOS/palavreado/pull/52) ([openvoiceos-bot](https://github.com/openvoiceos-bot))
+
 ## [1.7.5a1](https://github.com/OpenVoiceOS/palavreado/tree/1.7.5a1) (2026-09-10)
 
 [Full Changelog](https://github.com/OpenVoiceOS/palavreado/compare/1.7.4a1...1.7.5a1)
