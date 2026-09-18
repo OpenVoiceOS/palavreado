@@ -516,7 +516,14 @@ class PalavreadoPipeline(ConfidenceMatcherPipeline):
 
     def handle_detach_skill(self, message: Message) -> None:
         """Remove all intents and vocab belonging to a skill."""
-        skill_id = message.data.get("skill_id", "")
+        skill_id = message.data.get("skill_id") or ""
+        if not skill_id:
+            # every filter below is a startswith, and "" is a prefix of
+            # every name: an empty target would remove every skill
+            LOG.warning("rejected detach_skill: no payload skill_id; "
+                        f"context skill_id {message.context.get('skill_id', '')!r} "
+                        "is provenance, not the target")
+            return
         self._context_gates = {n: g for n, g in self._context_gates.items()
                                if not n.startswith(skill_id)}
         self._intent_keywords = {n: k for n, k in self._intent_keywords.items()
