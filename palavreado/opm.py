@@ -256,6 +256,28 @@ class PalavreadoPipeline(ConfidenceMatcherPipeline):
             samples = [samples]
         return [s for s in samples if isinstance(s, str) and s.strip()]
 
+    @staticmethod
+    def _payload_skill_id(message: Message, topic: str) -> str:
+        """The OVOS-INTENT-4 §3.2 target.
+
+        "`context.skill_id` names the source that emitted the message
+        (§3.1) and is provenance only. A consumer — plugin or orchestrator
+        — MUST act on the payload value, MUST NOT substitute
+        `context.skill_id` for it, and MUST NOT treat a difference between
+        the two as grounds for rejection. A consumer SHOULD log source and
+        target at DEBUG when they differ." Returns "" when the payload
+        names no target; the caller then rejects the message.
+        """
+        target = message.data.get("skill_id") or ""
+        source = message.context.get("skill_id", "")
+        if not target:
+            LOG.warning(f"rejected {topic}: no payload skill_id "
+                        f"(OVOS-INTENT-4 §3.2); context skill_id "
+                        f"{source!r} is provenance, not the target")
+        elif source and source != target:
+            LOG.debug(f"{topic}: source {source!r} acts on target {target!r}")
+        return target
+
     def handle_register_keyword_intent(self, message: Message) -> None:
         """Register a keyword intent from an OVOS-INTENT-4 §5 payload.
 
@@ -276,7 +298,7 @@ class PalavreadoPipeline(ConfidenceMatcherPipeline):
         the producer's only debugging signal since the bus is fire-and-forget.
         """
         data = message.data
-        skill_id = data.get("skill_id") or message.context.get("skill_id", "")
+        skill_id = self._payload_skill_id(message, str(SpecMessage.INTENT_REGISTER_KEYWORD))
         intent_name = data.get("intent_name", "")
         lang = standardize_lang(data.get("lang") or get_message_lang(message))
         topic = str(SpecMessage.INTENT_REGISTER_KEYWORD)
@@ -390,7 +412,7 @@ class PalavreadoPipeline(ConfidenceMatcherPipeline):
         Rejects payloads with empty ``samples`` (§7.2).
         """
         data = message.data
-        skill_id = data.get("skill_id") or message.context.get("skill_id", "")
+        skill_id = self._payload_skill_id(message, str(SpecMessage.ENTITY_REGISTER))
         entity_name = data.get("entity_name", "")
         lang = standardize_lang(data.get("lang") or get_message_lang(message))
         topic = str(SpecMessage.ENTITY_REGISTER)
@@ -440,7 +462,7 @@ class PalavreadoPipeline(ConfidenceMatcherPipeline):
         omitted, removes the intent for every registered language.
         """
         data = message.data
-        skill_id = data.get("skill_id") or message.context.get("skill_id", "")
+        skill_id = self._payload_skill_id(message, str(SpecMessage.INTENT_DEREGISTER))
         intent_name = data.get("intent_name", "")
         if not skill_id or not intent_name:
             return
@@ -466,7 +488,7 @@ class PalavreadoPipeline(ConfidenceMatcherPipeline):
 
     def handle_skill_deregister(self, message: Message) -> None:
         """Remove every intent and entity owned by a skill (OVOS-INTENT-4 §8.4)."""
-        skill_id = message.data.get("skill_id") or message.context.get("skill_id", "")
+        skill_id = self._payload_skill_id(message, str(SpecMessage.SKILL_DEREGISTER))
         if not skill_id:
             return
         prefix = f"{skill_id}:"
@@ -487,7 +509,7 @@ class PalavreadoPipeline(ConfidenceMatcherPipeline):
     def handle_intent_disable(self, message: Message) -> None:
         """Suppress an intent without removing it (OVOS-INTENT-4 §8.5)."""
         data = message.data
-        skill_id = data.get("skill_id") or message.context.get("skill_id", "")
+        skill_id = self._payload_skill_id(message, str(SpecMessage.INTENT_DISABLE))
         intent_name = data.get("intent_name", "")
         if not skill_id or not intent_name:
             return
@@ -496,7 +518,7 @@ class PalavreadoPipeline(ConfidenceMatcherPipeline):
     def handle_intent_enable(self, message: Message) -> None:
         """Re-arm a previously disabled intent (OVOS-INTENT-4 §8.5)."""
         data = message.data
-        skill_id = data.get("skill_id") or message.context.get("skill_id", "")
+        skill_id = self._payload_skill_id(message, str(SpecMessage.INTENT_ENABLE))
         intent_name = data.get("intent_name", "")
         if not skill_id or not intent_name:
             return
@@ -516,7 +538,13 @@ class PalavreadoPipeline(ConfidenceMatcherPipeline):
 
     def handle_detach_skill(self, message: Message) -> None:
         """Remove all intents and vocab belonging to a skill."""
-        skill_id = message.data.get("skill_id", "")
+        # the bus client dispatches every ovos.skill.deregister to this
+        # counterpart topic with the same payload, so the §3.2 rule reaches
+        # here too. Every filter below is a startswith, and "" is a prefix
+        # of every name: an empty target would remove every skill.
+        skill_id = self._payload_skill_id(message, "detach_skill")
+        if not skill_id:
+            return
         self._context_gates = {n: g for n, g in self._context_gates.items()
                                if not n.startswith(skill_id)}
         self._intent_keywords = {n: k for n, k in self._intent_keywords.items()
