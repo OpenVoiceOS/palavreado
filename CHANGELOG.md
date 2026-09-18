@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.6a1](https://github.com/OpenVoiceOS/palavreado/tree/1.7.6a1) (2026-09-18)
+
+[Full Changelog](https://github.com/OpenVoiceOS/palavreado/compare/1.7.5a2...1.7.6a1)
+
+**Merged pull requests:**
+
+- fix: act on the payload skill\_id only \(OVOS-INTENT-4 section 3.2\) [\#54](https://github.com/OpenVoiceOS/palavreado/pull/54) ([openvoiceos-bot](https://github.com/openvoiceos-bot))
+
 ## [1.7.5a2](https://github.com/OpenVoiceOS/palavreado/tree/1.7.5a2) (2026-09-13)
 
 [Full Changelog](https://github.com/OpenVoiceOS/palavreado/compare/1.7.5a1...1.7.5a2)
