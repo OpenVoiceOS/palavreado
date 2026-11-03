@@ -4,7 +4,7 @@
 
 ## Requirements
 
-- Python 3.9 or later
+- Python 3.11 or later
 - No native extensions; pure Python
 
 ---
@@ -36,7 +36,7 @@ Pulls in the extra dependencies required by `PalavreadoPipeline`:
 | Package | Purpose |
 |---|---|
 | `ovos-utils` | `FakeBus`, `flatten_list`, logging |
-| `langcodes` | BCP-47 language tag resolution |
+| `ovos-spec-tools[langcodes]` | BCP-47 language tag resolution |
 
 ---
 

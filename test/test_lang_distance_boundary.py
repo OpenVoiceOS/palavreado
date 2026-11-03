@@ -33,5 +33,23 @@ class TestResolveLangBoundary(unittest.TestCase):
                 self.assertIsNone(_resolve(requested, available))
 
 
+class TestResolveLangDefaultRegion(unittest.TestCase):
+    """A tag with no region is measured from its default region, the region
+    where the language first appeared and is still spoken."""
+
+    def _resolve_among(self, requested, available):
+        pipeline = PalavreadoPipeline.__new__(PalavreadoPipeline)
+        pipeline.containers = {lang: Mock() for lang in available}
+        return PalavreadoPipeline._resolve_lang(pipeline, requested)
+
+    def test_bare_tag_prefers_the_default_region(self):
+        # The other region is listed first, so a tie broken by order fails.
+        for requested, available, expected in [
+                ("en", ["en-US", "en-GB"], "en-GB"),
+                ("pt", ["pt-BR", "pt-PT"], "pt-PT")]:
+            with self.subTest(requested=requested):
+                self.assertEqual(self._resolve_among(requested, available), expected)
+
+
 if __name__ == "__main__":
     unittest.main()

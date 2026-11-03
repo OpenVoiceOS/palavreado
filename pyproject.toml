@@ -15,15 +15,13 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-requires-python = ">=3.10"
-dependencies = ["simplematch", "quebra_frases", "ovos-spec-tools>=1.0.0a1,<2.0.0"]
+requires-python = ">=3.11"
+dependencies = ["simplematch", "quebra_frases", "ovos-spec-tools>=1.17.1a1,<2.0.0"]
 
 [project.optional-dependencies]
 ovos = [
@@ -35,8 +33,7 @@ ovos = [
     "ovos-plugin-manager>=2.3.0a1,<3.0.0",
     "ovos-utils",
     "ovos-workshop>=2.0.1a1",
-    "ovos-spec-tools>=1.4.0a1",
-    "langcodes",
+    "ovos-spec-tools[langcodes]>=1.17.1a1",
 ]
 dev = [
     "pytest",
@@ -46,8 +43,7 @@ dev = [
     "ovos-plugin-manager>=2.3.0a1,<3.0.0",
     "ovos-utils",
     "ovos-workshop>=2.0.1a1",
-    "ovos-spec-tools>=1.4.0a1",
-    "langcodes",
+    "ovos-spec-tools[langcodes]>=1.17.1a1",
 ]
 test = ["palavreado[dev]"]
 
