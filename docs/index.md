@@ -45,7 +45,7 @@ The library ships two things:
 - **Matching strategy:** keyword lookup, contiguous + non-contiguous multi-word, optional regex / autoregex entity extraction
 
 - **Dependencies:** `simplematch`, `quebra_frases` (core). The OVOS stack is only required for the pipeline plugin
-- **Python:** 3.9 to 3.13
+- **Python:** 3.11 or later
 - **License:** Apache 2.0
 
 ---

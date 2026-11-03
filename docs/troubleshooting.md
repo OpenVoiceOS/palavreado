@@ -117,15 +117,16 @@ Regex-matched slots receive a `0.9` multiplier rather than `1.0` (`palavreado/__
 
 ### Symptom: intent never fires. `_resolve_lang` returns `None`
 
-`palavreado/opm.py:282`
+`palavreado/opm.py`
 
 ```python
-def _resolve_lang(self, lang: str) -> str | None:
-    closest, score = closest_match(lang, list(self.containers.keys()))
-    return closest if score < 10 else None
+def _resolve_lang(self, lang: str) -> Optional[str]:
+    if not self.containers:
+        return None
+    return closest_lang(standardize_lang(lang), list(self.containers.keys()))
 ```
 
-If the closest BCP-47 match score is 10 or more, no container is selected and `None` is returned.
+`closest_lang` uses the default bound, `DEFAULT_MAX_LANGUAGE_DISTANCE` (10), and the bound is inclusive. If the closest container is more than 10 from the query language, no container is selected and `None` is returned. A container at exactly 10, such as `zh` for a `wuu` query, still resolves.
 
 **Check:** Print the registered language containers:
 
