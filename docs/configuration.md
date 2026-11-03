@@ -141,7 +141,7 @@ Short utterances (1 to 3 words) often score lower than medium utterances. There 
 
 ### Multi-language deployments
 
-Make sure `secondary_langs` is populated in `mycroft.conf`. If a language is not listed, no `IntentContainer` is created for it, and all utterances in that language return `None`. `_resolve_lang` uses BCP-47 closest-match (via `langcodes`). For this reason, `"en-GB"` matches an `"en-US"` container with a small distance penalty.
+Make sure `secondary_langs` is populated in `mycroft.conf`. If a language is not listed, no `IntentContainer` is created for it, and all utterances in that language return `None`. `_resolve_lang` picks the closest container with `ovos_spec_tools.closest_lang`. For this reason, `"en-GB"` matches an `"en-US"` container with a small distance penalty. A tag with no region is measured from its default region, so `"en"` prefers an `"en-GB"` container over an `"en-US"` one.
 
 ---
 [← OVOS Pipeline Plugin](ovos-plugin.md) · [Home](index.md) · [Benchmark →](benchmark.md)

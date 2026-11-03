@@ -734,16 +734,10 @@ class PalavreadoPipeline(ConfidenceMatcherPipeline):
     def _resolve_lang(self, lang: str) -> Optional[str]:
         if not self.containers:
             return None
-        # ovos_spec_tools.language.closest_lang treats max_distance as an
-        # EXCLUSIVE upper bound ("resolves only if its distance is below
-        # max_distance" - see the closest_lang docstring). Macrolanguage
-        # members sit at tag_distance == 10 from their macrolanguage (e.g.
-        # tag_distance('arz', 'ar') == 10, langcodes' macrolanguage distance),
-        # which is exactly DEFAULT_MAX_LANGUAGE_DISTANCE. Passing the default
-        # bound excludes those matches, so pass an explicit inclusive bound
-        # (default + 1) to admit exact macrolanguage-distance matches.
-        return closest_lang(standardize_lang(lang),
-                            list(self.containers.keys()), max_distance=11)
+        # The default bound, DEFAULT_MAX_LANGUAGE_DISTANCE (10), is inclusive,
+        # so a macrolanguage member at exactly 10 from its macrolanguage
+        # (wuu and zh) still resolves.
+        return closest_lang(standardize_lang(lang), list(self.containers.keys()))
 
     def shutdown(self) -> None:
         self.bus.remove("register_vocab", self.handle_register_vocab)

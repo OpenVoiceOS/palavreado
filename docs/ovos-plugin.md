@@ -181,7 +181,7 @@ _match_intent(
 
 1. Deserialise the message and look up the session via `SessionManager.get`.
 2. Filter out utterances longer than `max_words`.
-3. Resolve the language via `_resolve_lang` (BCP-47 closest-match with `langcodes`).
+3. Resolve the language via `_resolve_lang` (BCP-47 closest-match with `ovos_spec_tools.closest_lang`).
 4. For each utterance, call `_calc_palavreado_intent` and keep the best result.
 5. Check session blacklists (`sess.blacklisted_intents`, `sess.blacklisted_skills`).
 6. Return `IntentHandlerMatch(match_type=name, match_data=result, skill_id=name.split(":")[0], utterance=...)`.
@@ -190,13 +190,13 @@ _match_intent(
 
 ## Language resolution
 
-`palavreado/opm.py:282`
+`palavreado/opm.py`
 
 ```python
 def _resolve_lang(self, lang: str) -> str | None:
 ```
 
-Uses `langcodes.closest_match` to find the closest registered language container.  Returns `None` (skip matching) if the closest match distance is 10 or more (no reasonable language match).
+Uses `ovos_spec_tools.closest_lang` to find the closest registered language container. A tag with no region is measured from its default region: `en` is `en-GB` and `pt` is `pt-PT`. Returns `None` (skip matching) if the closest match distance is more than 10 (no reasonable language match).
 
 ---
 

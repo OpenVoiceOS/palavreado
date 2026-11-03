@@ -1,3 +1,0 @@
-simplematch
-quebra_frases
-ovos-spec-tools
